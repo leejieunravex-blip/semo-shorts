@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "kpop-content",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["kpop_content_app.py"],
+      "port": 5002
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+flask>=3.0
+yt-dlp>=2024.1
+deep-translator>=1.11
+opencv-python-headless>=4.8
+gunicorn>=21.0

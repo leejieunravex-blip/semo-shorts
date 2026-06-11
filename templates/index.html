@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>세모 쇼츠 메이커 🎬</title>
+<style>
+:root {
+  --bg:       #0b0b12;
+  --surface:  #13131e;
+  --card:     #1a1a28;
+  --border:   #2e2e46;
+  --accent:   #f5b1ff;
+  --accent2:  #b57eff;
+  --green:    #4ade80;
+  --red:      #f87171;
+  --yellow:   #fbbf24;
+  --text:     #e4e4f0;
+  --muted:    #6868a0;
+  --input-bg: #0f0f1a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'Segoe UI','Apple SD Gothic Neo',sans-serif;
+  min-height:100vh;padding:36px 16px 100px;
+  display:flex;flex-direction:column;align-items:center;
+}
+
+/* ── 헤더 ── */
+.hdr{text-align:center;margin-bottom:32px}
+.hdr h1{
+  font-size:2.2rem;font-weight:900;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  letter-spacing:-1px;
+}
+.hdr p{color:var(--muted);font-size:.9rem;margin-top:6px}
+
+/* ── 공통 카드 ── */
+.card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:18px;padding:28px;width:100%;max-width:760px;
+  margin-bottom:16px;
+}
+.card-title{
+  font-size:.78rem;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:2px;margin-bottom:22px;
+}
+
+/* ── 폼 요소 ── */
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:.8rem;color:var(--muted);font-weight:600;letter-spacing:.4px}
+input[type=text],input[type=number],select{
+  background:var(--input-bg);border:1px solid var(--border);
+  border-radius:9px;color:var(--text);padding:10px 13px;
+  font-size:.9rem;outline:none;transition:border-color .2s;width:100%;
+}
+input[type=text]:focus,input[type=number]:focus,select:focus{
+  border-color:var(--accent);
+}
+select option{background:var(--card)}
+
+/* ── 그리드 ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px}
+
+/* ── 색상 피커 행 ── */
+.color-row{display:flex;gap:10px;align-items:flex-end}
+.color-row .field{flex:1}
+.color-swatch{
+  width:42px;height:38px;border-radius:8px;border:2px solid var(--border);
+  cursor:pointer;padding:0;background:none;flex-shrink:0;overflow:hidden;
+  align-self:flex-end;
+}
+input[type=color]{
+  width:100%;height:100%;border:none;cursor:pointer;padding:0;
+  background:none;
+}
+.opacity-wrap{flex:1}
+
+/* ── 체크박스 그룹 ── */
+.check-group{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+.check-item{
+  display:flex;align-items:center;gap:7px;
+  background:var(--input-bg);border:1px solid var(--border);
+  border-radius:8px;padding:8px 13px;cursor:pointer;
+  font-size:.85rem;user-select:none;transition:all .15s;
+}
+.check-item:hover{border-color:var(--accent);color:var(--accent)}
+.check-item input{accent-color:var(--accent);width:15px;height:15px}
+.check-item.active{border-color:var(--accent);color:var(--accent);background:#1e1028}
+
+/* ── 자막 탭 ── */
+.sub-tabs{display:flex;gap:8px;margin-bottom:22px}
+.sub-tab{
+  flex:1;padding:10px;border-radius:10px;border:1px solid var(--border);
+  background:var(--input-bg);color:var(--muted);font-weight:700;
+  font-size:.9rem;cursor:pointer;text-align:center;transition:all .2s;
+}
+.sub-tab.eng-active{border-color:var(--accent);color:var(--accent);background:#1e1028}
+.sub-tab.kor-active{border-color:#7dd3fc;color:#7dd3fc;background:#0e1e28}
+.sub-panel{display:none}
+.sub-panel.show{display:block}
+
+/* ── 섹션 구분선 ── */
+.section-sep{
+  border:none;border-top:1px solid var(--border);
+  margin:20px 0;
+}
+.section-label{
+  font-size:.75rem;color:var(--muted);font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;
+  margin-bottom:14px;margin-top:20px;
+  display:flex;align-items:center;gap:8px;
+}
+.section-label::after{
+  content:'';flex:1;height:1px;background:var(--border);
+}
+
+/* ── 슬라이더 ── */
+input[type=range]{
+  width:100%;accent-color:var(--accent);cursor:pointer;
+  height:4px;border-radius:4px;background:var(--border);
+  outline:none;border:none;padding:0;
+}
+.range-wrap{display:flex;align-items:center;gap:10px}
+.range-wrap input[type=range]{flex:1}
+.range-val{
+  font-size:.8rem;color:var(--accent);font-weight:700;
+  min-width:36px;text-align:right;
+}
+
+/* ── 정렬 버튼 ── */
+.align-btns{display:flex;gap:6px;flex-wrap:wrap}
+.align-btn{
+  width:40px;height:34px;background:var(--input-bg);
+  border:1px solid var(--border);border-radius:7px;
+  color:var(--muted);font-size:.8rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.align-btn:hover{border-color:var(--accent);color:var(--accent)}
+.align-btn.active{border-color:var(--accent);background:#1e1028;color:var(--accent)}
+
+/* ── 큰 버튼 ── */
+.btn-main{
+  width:100%;padding:16px;border:none;border-radius:13px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#1a0a22;font-size:1.05rem;font-weight:900;
+  cursor:pointer;transition:opacity .2s,transform .1s;
+  letter-spacing:.5px;
+}
+.btn-main:hover{opacity:.9;transform:translateY(-1px)}
+.btn-main:disabled{opacity:.45;cursor:not-allowed;transform:none}
+
+/* ── 진행 카드 ── */
+#prog-card{display:none}
+.steps{display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
+.step-row{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 14px;background:var(--input-bg);
+  border:1px solid var(--border);border-radius:10px;transition:all .3s;
+}
+.step-row.active{border-color:var(--accent);background:#1e1028}
+.step-row.done  {border-color:var(--green); background:#0e1e14}
+.step-row.err   {border-color:var(--red);   background:#1e0e0e}
+.step-ic{
+  width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.8rem;font-weight:800;background:var(--border);
+  color:var(--muted);flex-shrink:0;transition:all .3s;
+}
+.step-row.active .step-ic{background:var(--accent);color:#1a0a22}
+.step-row.done   .step-ic{background:var(--green); color:#082008}
+.step-row.err    .step-ic{background:var(--red);   color:#fff}
+.step-lbl{font-size:.88rem}
+.step-row.active .step-lbl{color:var(--accent);font-weight:600}
+.step-row.done   .step-lbl{color:var(--green)}
+.step-row.err    .step-lbl{color:var(--red)}
+
+.pb-wrap{background:#1e1e2e;border-radius:100px;height:7px;overflow:hidden;margin-bottom:12px}
+.pb-fill{
+  height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));
+  border-radius:100px;transition:width .5s ease;width:0%
+}
+
+.log-box{
+  background:var(--input-bg);border:1px solid var(--border);
+  border-radius:10px;padding:10px 13px;height:140px;overflow-y:auto;
+  font-family:Consolas,monospace;font-size:.75rem;color:#7878b0;line-height:1.7;
+}
+.log-ok{color:var(--green)}
+.log-err{color:var(--red)}
+
+/* ── 완료 카드 ── */
+#done-card{display:none}
+.done-center{text-align:center;padding:16px 0 24px}
+.done-center .big{font-size:3.5rem;display:block;margin-bottom:8px}
+.done-center h3{font-size:1.5rem;margin-bottom:4px}
+.done-center p{color:var(--muted);font-size:.88rem}
+.btn-dl{
+  display:block;width:100%;padding:15px;border:none;border-radius:12px;
+  background:linear-gradient(135deg,#4ade80,#22c55e);
+  color:#082008;font-size:1rem;font-weight:900;
+  cursor:pointer;text-decoration:none;text-align:center;
+  margin-bottom:10px;transition:opacity .2s;
+}
+.btn-dl:hover{opacity:.9}
+.btn-reset{
+  width:100%;padding:12px;background:transparent;
+  border:1px solid var(--border);border-radius:12px;
+  color:var(--muted);font-size:.9rem;cursor:pointer;transition:all .2s;
+}
+.btn-reset:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ── 페이드 배지 ── */
+.fade-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:#1e1028;border:1px solid var(--accent2);
+  border-radius:8px;padding:6px 12px;
+  font-size:.8rem;color:var(--accent2);font-weight:600;
+}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{
+  display:inline-block;width:14px;height:14px;
+  border:2px solid rgba(255,255,255,.25);border-top-color:#fff;
+  border-radius:50%;animation:spin .7s linear infinite;
+  vertical-align:middle;margin-right:6px;
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <h1>🎬 세모 쇼츠 메이커</h1>
+  <p>YouTube URL만 넣으면 1080×1920 세로 쇼츠가 자동 완성</p>
+</div>
+
+<!-- ══════════════════════════════════════
+     기본 설정 카드
+══════════════════════════════════════ -->
+<div class="card" id="form-card">
+  <div class="card-title">📋 기본 설정</div>
+
+  <div class="field" style="margin-bottom:16px">
+    <label>YouTube URL</label>
+    <input type="text" id="url" placeholder="https://www.youtube.com/watch?v=...">
+  </div>
+
+  <div class="g3" style="margin-bottom:8px">
+    <div class="field">
+      <label>시작 시간 (초)</label>
+      <input type="number" id="start_sec" value="0" min="0">
+    </div>
+    <div class="field">
+      <label>클립 길이 (초)</label>
+      <input type="number" id="duration" value="60" min="5" max="180">
+    </div>
+    <div class="field">
+      <label>오디오 페이드 (초)</label>
+      <input type="number" id="fade_audio" value="0.3" min="0" max="2" step="0.1">
+    </div>
+  </div>
+
+  <!-- 자막 페이드 안내 -->
+  <div style="margin:18px 0 0;display:flex;gap:8px;flex-wrap:wrap">
+    <div class="fade-badge">✨ 첫 자막 : 0.3s 페이드 인</div>
+    <div class="fade-badge">🌙 마지막 자막 : 0.3s 페이드 아웃</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     자막 스타일 카드
+══════════════════════════════════════ -->
+<div class="card" id="style-card">
+  <div class="card-title">🎨 자막 스타일 설정</div>
+
+  <!-- 탭 -->
+  <div class="sub-tabs">
+    <div class="sub-tab eng-active" onclick="switchTab('eng')" id="tab-eng">
+      🔤 영어 자막 (위)
+    </div>
+    <div class="sub-tab" onclick="switchTab('kor')" id="tab-kor">
+      🇰🇷 한국어 자막 (아래)
+    </div>
+  </div>
+
+  <!-- ── ENG 패널 ── -->
+  <div class="sub-panel show" id="panel-eng">
+    <!-- 폰트 -->
+    <div class="section-label">폰트</div>
+    <div class="g2" style="margin-bottom:14px">
+      <div class="field">
+        <label>폰트명</label>
+        <input type="text" id="eng-font" value="AppleSDGothicNeoEB00"
+          list="font-list" placeholder="폰트 이름 직접 입력">
+      </div>
+      <div class="field">
+        <label>폰트 크기</label>
+        <input type="number" id="eng-size" value="74" min="10" max="200">
+      </div>
+    </div>
+
+    <!-- 텍스트 스타일 -->
+    <div class="section-label">텍스트 스타일</div>
+    <div class="check-group" style="margin-bottom:14px">
+      <label class="check-item active" id="lbl-eng-bold">
+        <input type="checkbox" id="eng-bold" checked onchange="toggleCheck('eng-bold','lbl-eng-bold')">
+        <b>B</b> 굵게
+      </label>
+      <label class="check-item" id="lbl-eng-italic">
+        <input type="checkbox" id="eng-italic" onchange="toggleCheck('eng-italic','lbl-eng-italic')">
+        <i>I</i> 기울기
+      </label>
+      <label class="check-item" id="lbl-eng-underline">
+        <input type="checkbox" id="eng-underline" onchange="toggleCheck('eng-underline','lbl-eng-underline')">
+        <u>U</u> 밑줄
+      </label>
+      <label class="check-item" id="lbl-eng-strikeout">
+        <input type="checkbox" id="eng-strikeout" onchange="toggleCheck('eng-strikeout','lbl-eng-strikeout')">
+        <s>S</s> 취소선
+      </label>
+    </div>
+
+    <!-- 텍스트 색상 -->
+    <div class="section-label">텍스트 색상</div>
+    <div class="color-row" style="margin-bottom:14px">
+      <div class="field">
+        <label>색상</label>
+        <div class="color-swatch"><input type="color" id="eng-color" value="#F5B1FF"></div>
+      </div>
+      <div class="opacity-wrap">
+        <div class="field">
+          <label>불투명도 <span id="eng-color-op-val">100</span>%</label>
+          <div class="range-wrap">
+            <input type="range" id="eng-color-op" min="0" max="100" value="100"
+              oninput="rangeVal('eng-color-op','eng-color-op-val')">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 테두리 (Outline) -->
+    <div class="section-label">테두리 (Outline)</div>
+    <div class="g3" style="margin-bottom:14px">
+      <div class="field">
+        <label>두께 (px)</label>
+        <input type="number" id="eng-outline-w" value="1" min="0" max="20">
+      </div>
+      <div class="field">
+        <label>색상</label>
+        <div class="color-swatch"><input type="color" id="eng-outline-color" value="#000000"></div>
+      </div>
+      <div class="field">
+        <label>불투명도 <span id="eng-outline-op-val">100</span>%</label>
+        <div class="range-wrap">
+          <input type="range" id="eng-outline-op" min="0" max="100" value="100"
+            oninput="rangeVal('eng-outline-op','eng-outline-op-val')">
+        </div>
+      </div>
+    </div>
+
+    <!-- 그림자 (Shadow) -->
+    <div class="section-label">그림자 (Shadow)</div>
+    <div class="g4" style="margin-bottom:14px">
+      <div class="field">
+        <label>깊이 (px)</label>
+        <input type="number" id="eng-shadow-d" value="0" min="0" max="20">
+      </div>
+      <div class="field">
+        <label>색상</label>
+        <div class="color-swatch"><input type="color" id="eng-shadow-color" value="#000000"></div>
+      </div>
+      <div class="field">
+        <label>불투명도 <span id="eng-shadow-op-val">100</span>%</label>
+        <div class="range-wrap">
+          <input type="range" id="eng-shadow-op" min="0" max="100" value="100"
+            oninput="rangeVal('eng-shadow-op','eng-shadow-op-val')">
+        </div>
+      </div>
+      <div class="field">
+        <label>블러 (px)</label>
+        <input type="number" id="eng-blur" value="0" min="0" max="20">
+      </div>
+    </div>
+
+    <!-- 위치 & 정렬 -->
+    <div class="section-label">위치 & 정렬</div>
+    <div class="g2" style="margin-bottom:14px">
+      <div class="field">
+        <label>X 위치 (px, 1080 기준)</label>
+        <input type="number" id="eng-x" value="540" min="0" max="1080">
+      </div>
+      <div class="field">
+        <label>Y 위치 (px, 1920 기준)</label>
+        <input type="number" id="eng-y" value="900" min="0" max="1920">
+      </div>
+    </div>
+    <div class="field" style="margin-bottom:14px">
+      <label>텍스트 정렬 (기준점)</label>
+      <div class="align-btns" id="eng-align-btns">
+        <div class="align-btn" data-v="7" onclick="setAlign('eng',7)">↖</div>
+        <div class="align-btn" data-v="8" onclick="setAlign('eng',8)">↑</div>
+        <div class="align-btn" data-v="9" onclick="setAlign('eng',9)">↗</div>
+        <div class="align-btn" data-v="4" onclick="setAlign('eng',4)">←</div>
+        <div class="align-btn active" data-v="5" onclick="setAlign('eng',5)">●</div>
+        <div class="align-btn" data-v="6" onclick="setAlign('eng',6)">→</div>
+        <div class="align-btn" data-v="1" onclick="setAlign('eng',1)">↙</div>
+        <div class="align-btn" data-v="2" onclick="setAlign('eng',2)">↓</div>
+        <div class="align-btn" data-v="3" onclick="setAlign('eng',3)">↘</div>
+      </div>
+      <input type="hidden" id="eng-align" value="5">
+    </div>
+
+    <!-- 변형 -->
+    <div class="section-label">변형 (Transform)</div>
+    <div class="g4" style="margin-bottom:4px">
+      <div class="field">
+        <label>가로 확대 %</label>
+        <input type="number" id="eng-scalex" value="100" min="10" max="300">
+      </div>
+      <div class="field">
+        <label>세로 확대 %</label>
+        <input type="number" id="eng-scaley" value="100" min="10" max="300">
+      </div>
+      <div class="field">
+        <label>자간 (px)</label>
+        <input type="number" id="eng-spacing" value="0" min="-20" max="50">
+      </div>
+      <div class="field">
+        <label>회전 (°)</label>
+        <input type="number" id="eng-angle" value="0" min="-360" max="360">
+      </div>
+    </div>
+  </div><!-- /panel-eng -->
+
+  <!-- ── KOR 패널 ── -->
+  <div class="sub-panel" id="panel-kor">
+    <div class="section-label">폰트</div>
+    <div class="g2" style="margin-bottom:14px">
+      <div class="field">
+        <label>폰트명</label>
+        <input type="text" id="kor-font" value="AppleSDGothicNeoEB00"
+          list="font-list" placeholder="폰트 이름 직접 입력">
+      </div>
+      <div class="field">
+        <label>폰트 크기</label>
+        <input type="number" id="kor-size" value="74" min="10" max="200">
+      </div>
+    </div>
+
+    <div class="section-label">텍스트 스타일</div>
+    <div class="check-group" style="margin-bottom:14px">
+      <label class="check-item active" id="lbl-kor-bold">
+        <input type="checkbox" id="kor-bold" checked onchange="toggleCheck('kor-bold','lbl-kor-bold')">
+        <b>B</b> 굵게
+      </label>
+      <label class="check-item" id="lbl-kor-italic">
+        <input type="checkbox" id="kor-italic" onchange="toggleCheck('kor-italic','lbl-kor-italic')">
+        <i>I</i> 기울기
+      </label>
+      <label class="check-item" id="lbl-kor-underline">
+        <input type="checkbox" id="kor-underline" onchange="toggleCheck('kor-underline','lbl-kor-underline')">
+        <u>U</u> 밑줄
+      </label>
+      <label class="check-item" id="lbl-kor-strikeout">
+        <input type="checkbox" id="kor-strikeout" onchange="toggleCheck('kor-strikeout','lbl-kor-strikeout')">
+        <s>S</s> 취소선
+      </label>
+    </div>
+
+    <div class="section-label">텍스트 색상</div>
+    <div class="color-row" style="margin-bottom:14px">
+      <div class="field">
+        <label>색상</label>
+        <div class="color-swatch"><input type="color" id="kor-color" value="#FFFFFF"></div>
+      </div>
+      <div class="opacity-wrap">
+        <div class="field">
+          <label>불투명도 <span id="kor-color-op-val">100</span>%</label>
+          <div class="range-wrap">
+            <input type="range" id="kor-color-op" min="0" max="100" value="100"
+              oninput="rangeVal('kor-color-op','kor-color-op-val')">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">테두리 (Outline)</div>
+    <div class="g3" style="margin-bottom:14px">
+      <div class="field">
+        <label>두께 (px)</label>
+        <input type="number" id="kor-outline-w" value="1" min="0" max="20">
+      </div>
+      <div class="field">
+        <label>색상</label>
+        <div class="color-swatch"><input type="color" id="kor-outline-color" value="#000000"></div>
+      </div>
+      <div class="field">
+        <label>불투명도 <span id="kor-outline-op-val">100</span>%</label>
+        <div class="range-wrap">
+          <input type="range" id="kor-outline-op" min="0" max="100" value="100"
+            oninput="rangeVal('kor-outline-op','kor-outline-op-val')">
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">그림자 (Shadow)</div>
+    <div class="g4" style="margin-bottom:14px">
+      <div class="field">
+        <label>깊이 (px)</label>
+        <input type="number" id="kor-shadow-d" value="0" min="0" max="20">
+      </div>
+      <div class="field">
+        <label>색상</label>
+        <div class="color-swatch"><input type="color" id="kor-shadow-color" value="#000000"></div>
+      </div>
+      <div class="field">
+        <label>불투명도 <span id="kor-shadow-op-val">100</span>%</label>
+        <div class="range-wrap">
+          <input type="range" id="kor-shadow-op" min="0" max="100" value="100"
+            oninput="rangeVal('kor-shadow-op','kor-shadow-op-val')">
+        </div>
+      </div>
+      <div class="field">
+        <label>블러 (px)</label>
+        <input type="number" id="kor-blur" value="0" min="0" max="20">
+      </div>
+    </div>
+
+    <div class="section-label">위치 & 정렬</div>
+    <div class="g2" style="margin-bottom:14px">
+      <div class="field">
+        <label>X 위치 (px)</label>
+        <input type="number" id="kor-x" value="540" min="0" max="1080">
+      </div>
+      <div class="field">
+        <label>Y 위치 (px)</label>
+        <input type="number" id="kor-y" value="990" min="0" max="1920">
+      </div>
+    </div>
+    <div class="field" style="margin-bottom:14px">
+      <label>텍스트 정렬 (기준점)</label>
+      <div class="align-btns" id="kor-align-btns">
+        <div class="align-btn" data-v="7" onclick="setAlign('kor',7)">↖</div>
+        <div class="align-btn" data-v="8" onclick="setAlign('kor',8)">↑</div>
+        <div class="align-btn" data-v="9" onclick="setAlign('kor',9)">↗</div>
+        <div class="align-btn" data-v="4" onclick="setAlign('kor',4)">←</div>
+        <div class="align-btn active" data-v="5" onclick="setAlign('kor',5)">●</div>
+        <div class="align-btn" data-v="6" onclick="setAlign('kor',6)">→</div>
+        <div class="align-btn" data-v="1" onclick="setAlign('kor',1)">↙</div>
+        <div class="align-btn" data-v="2" onclick="setAlign('kor',2)">↓</div>
+        <div class="align-btn" data-v="3" onclick="setAlign('kor',3)">↘</div>
+      </div>
+      <input type="hidden" id="kor-align" value="5">
+    </div>
+
+    <div class="section-label">변형 (Transform)</div>
+    <div class="g4" style="margin-bottom:4px">
+      <div class="field">
+        <label>가로 확대 %</label>
+        <input type="number" id="kor-scalex" value="100" min="10" max="300">
+      </div>
+      <div class="field">
+        <label>세로 확대 %</label>
+        <input type="number" id="kor-scaley" value="100" min="10" max="300">
+      </div>
+      <div class="field">
+        <label>자간 (px)</label>
+        <input type="number" id="kor-spacing" value="0" min="-20" max="50">
+      </div>
+      <div class="field">
+        <label>회전 (°)</label>
+        <input type="number" id="kor-angle" value="0" min="-360" max="360">
+      </div>
+    </div>
+  </div><!-- /panel-kor -->
+</div><!-- /style-card -->
+
+<!-- 폰트 datalist -->
+<datalist id="font-list">
+  <option value="AppleSDGothicNeoEB00">
+  <option value="Apple SD Gothic Neo">
+  <option value="Malgun Gothic">
+  <option value="Arial">
+  <option value="Arial Black">
+  <option value="Impact">
+  <option value="Georgia">
+  <option value="Times New Roman">
+  <option value="Trebuchet MS">
+  <option value="Verdana">
+  <option value="Comic Sans MS">
+  <option value="Courier New">
+</datalist>
+
+<!-- ── 시작 버튼 ── -->
+<div style="width:100%;max-width:760px;margin-bottom:16px">
+  <button class="btn-main" id="btn-go" onclick="startJob()">
+    ✨ 쇼츠 만들기
+  </button>
+</div>
+
+<!-- ══════════════════════════════════════
+     진행 카드
+══════════════════════════════════════ -->
+<div class="card" id="prog-card">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+    <div class="card-title" style="margin:0">⚙️ 제작 중</div>
+    <div id="prog-pct" style="font-size:1.1rem;font-weight:800;color:var(--accent)">0%</div>
+  </div>
+  <div class="pb-wrap"><div class="pb-fill" id="pb-fill"></div></div>
+  <div class="steps">
+    <div class="step-row" id="sr-1"><div class="step-ic">1</div><div class="step-lbl">자막 다운로드</div></div>
+    <div class="step-row" id="sr-2"><div class="step-ic">2</div><div class="step-lbl">자막 싱크 매핑</div></div>
+    <div class="step-row" id="sr-3"><div class="step-ic">3</div><div class="step-lbl">ASS 자막 파일 생성</div></div>
+    <div class="step-row" id="sr-4"><div class="step-ic">4</div><div class="step-lbl">영상 다운로드</div></div>
+    <div class="step-row" id="sr-5"><div class="step-ic">5</div><div class="step-lbl">얼굴 감지 & 크롭 분석</div></div>
+    <div class="step-row" id="sr-6"><div class="step-ic">6</div><div class="step-lbl">최종 인코딩</div></div>
+  </div>
+  <div class="log-box" id="log-box"></div>
+</div>
+
+<!-- ══════════════════════════════════════
+     완료 카드
+══════════════════════════════════════ -->
+<div class="card" id="done-card">
+  <div class="done-center">
+    <span class="big">🎉</span>
+    <h3>쇼츠 완성!</h3>
+    <p>1080×1920 MP4 파일이 준비됐어요</p>
+  </div>
+  <a class="btn-dl" id="btn-dl" href="#">⬇️ MP4 다운로드</a>
+  <button class="btn-reset" onclick="resetAll()">+ 새 영상 만들기</button>
+</div>
+
+<script>
+// ── 탭 전환 ──
+function switchTab(tab) {
+  document.getElementById('panel-eng').classList.toggle('show', tab==='eng');
+  document.getElementById('panel-kor').classList.toggle('show', tab==='kor');
+  document.getElementById('tab-eng').className = 'sub-tab' + (tab==='eng'?' eng-active':'');
+  document.getElementById('tab-kor').className = 'sub-tab' + (tab==='kor'?' kor-active':'');
+}
+
+// ── 체크박스 ──
+function toggleCheck(id, lblId) {
+  const checked = document.getElementById(id).checked;
+  document.getElementById(lblId).classList.toggle('active', checked);
+}
+
+// ── 슬라이더 값 표시 ──
+function rangeVal(id, valId) {
+  document.getElementById(valId).textContent = document.getElementById(id).value;
+}
+
+// ── 정렬 버튼 ──
+function setAlign(prefix, val) {
+  document.querySelectorAll(`#${prefix}-align-btns .align-btn`).forEach(b => {
+    b.classList.toggle('active', parseInt(b.dataset.v) === val);
+  });
+  document.getElementById(`${prefix}-align`).value = val;
+}
+
+// ── 스타일 수집 ──
+function collectStyle(p) {
+  return {
+    font:           document.getElementById(`${p}-font`).value,
+    size:           +document.getElementById(`${p}-size`).value,
+    pos_x:          +document.getElementById(`${p}-x`).value,
+    pos_y:          +document.getElementById(`${p}-y`).value,
+    alignment:      +document.getElementById(`${p}-align`).value,
+    bold:            document.getElementById(`${p}-bold`).checked,
+    italic:          document.getElementById(`${p}-italic`).checked,
+    underline:       document.getElementById(`${p}-underline`).checked,
+    strikeout:       document.getElementById(`${p}-strikeout`).checked,
+    color:           document.getElementById(`${p}-color`).value,
+    color_opacity:  +document.getElementById(`${p}-color-op`).value,
+    outline_width:  +document.getElementById(`${p}-outline-w`).value,
+    outline_color:   document.getElementById(`${p}-outline-color`).value,
+    outline_opacity:+document.getElementById(`${p}-outline-op`).value,
+    shadow_depth:   +document.getElementById(`${p}-shadow-d`).value,
+    shadow_color:    document.getElementById(`${p}-shadow-color`).value,
+    shadow_opacity: +document.getElementById(`${p}-shadow-op`).value,
+    blur:           +document.getElementById(`${p}-blur`).value,
+    scale_x:        +document.getElementById(`${p}-scalex`).value,
+    scale_y:        +document.getElementById(`${p}-scaley`).value,
+    spacing:        +document.getElementById(`${p}-spacing`).value,
+    angle:          +document.getElementById(`${p}-angle`).value,
+  };
+}
+
+// ── 잡 시작 ──
+let jobId = null, pollTimer = null, lastLog = 0;
+
+function startJob() {
+  const url = document.getElementById('url').value.trim();
+  if (!url) { alert('YouTube URL을 입력해주세요!'); return; }
+
+  const btn = document.getElementById('btn-go');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>시작 중...';
+
+  fetch('/api/start', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      url,
+      start_sec: +document.getElementById('start_sec').value,
+      duration:  +document.getElementById('duration').value,
+      eng_style: collectStyle('eng'),
+      kor_style: collectStyle('kor'),
+    })
+  })
+  .then(r => r.json())
+  .then(d => {
+    if (d.error) { alert(d.error); btn.disabled=false; btn.innerHTML='✨ 쇼츠 만들기'; return; }
+    jobId = d.job_id; lastLog = 0;
+    document.getElementById('form-card').style.display  = 'none';
+    document.getElementById('style-card').style.display = 'none';
+    document.getElementById('btn-go').parentElement.style.display = 'none';
+    document.getElementById('prog-card').style.display  = 'block';
+    pollTimer = setInterval(poll, 2000);
+  })
+  .catch(e => { alert('오류: '+e); btn.disabled=false; btn.innerHTML='✨ 쇼츠 만들기'; });
+}
+
+function poll() {
+  fetch(`/api/status/${jobId}`).then(r=>r.json()).then(d => {
+    updateUI(d);
+    if (d.status==='done')  { clearInterval(pollTimer); showDone(); }
+    if (d.status==='error') { clearInterval(pollTimer); }
+  });
+}
+
+function updateUI(d) {
+  // 진행 바
+  document.getElementById('pb-fill').style.width = d.progress+'%';
+  document.getElementById('prog-pct').textContent = d.progress+'%';
+
+  // 스텝
+  for (let i=1; i<=6; i++) {
+    const r = document.getElementById(`sr-${i}`);
+    const ic = r.querySelector('.step-ic');
+    r.className = 'step-row';
+    if (i < d.step)        { r.classList.add('done');   ic.textContent='✓'; }
+    else if (i===d.step)   { r.classList.add('active'); ic.textContent=i; }
+    else                   { ic.textContent=i; }
+    if (d.status==='error' && i===d.step) { r.classList.remove('active'); r.classList.add('err'); ic.textContent='✕'; }
+  }
+
+  // 로그
+  const box = document.getElementById('log-box');
+  (d.log||[]).slice(lastLog).forEach(line => {
+    const el = document.createElement('div');
+    el.textContent = line;
+    if (line.includes('완료')||line.includes('완성')) el.className='log-ok';
+    else if (line.includes('오류')||line.includes('실패')) el.className='log-err';
+    box.appendChild(el);
+  });
+  lastLog = (d.log||[]).length;
+  box.scrollTop = box.scrollHeight;
+}
+
+function showDone() {
+  document.getElementById('prog-card').style.display = 'none';
+  document.getElementById('done-card').style.display = 'block';
+  document.getElementById('btn-dl').href = `/api/download/${jobId}`;
+}
+
+function resetAll() {
+  document.getElementById('done-card').style.display  = 'none';
+  document.getElementById('prog-card').style.display  = 'none';
+  document.getElementById('form-card').style.display  = 'block';
+  document.getElementById('style-card').style.display = 'block';
+  document.getElementById('btn-go').parentElement.style.display = 'block';
+  const btn = document.getElementById('btn-go');
+  btn.disabled=false; btn.innerHTML='✨ 쇼츠 만들기';
+  jobId=null; lastLog=0;
+  for(let i=1;i<=6;i++){
+    const r=document.getElementById(`sr-${i}`);
+    r.className='step-row';
+    r.querySelector('.step-ic').textContent=i;
+  }
+  document.getElementById('pb-fill').style.width='0%';
+  document.getElementById('prog-pct').textContent='0%';
+  document.getElementById('log-box').innerHTML='';
+}
+
+// 엔터 제출
+document.addEventListener('keydown', e => {
+  if (e.key==='Enter' && document.getElementById('form-card').style.display!=='none')
+    startJob();
+});
+</script>
+</body>
+</html>
